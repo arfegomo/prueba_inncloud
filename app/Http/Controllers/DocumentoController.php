@@ -56,4 +56,69 @@ class DocumentoController extends Controller
 
         return redirect()->route('documentos.index')->with('success', 'Registro grabado correctamente.');
     }
+
+    public function edit($id)
+    {
+        $documento = Documento::find($id);
+        $procesos = Proceso::pluck('nombre','id')->all();
+        $tiposDocumentos = TipoDocumento::pluck('nombre','id')->all();
+        return view('documentos.edit',compact('documento','procesos','tiposDocumentos'));
+    }
+
+    public function update(Request $request, $id)
+    {   
+        $this->validate($request, [
+            'nombre' => ['required', 'string', 'max:255'],
+            'contenido' => ['required', 'string'],
+        ]);
+    
+        $documento = Documento::find($id);  
+        $documento->nombre = $request->get('nombre');
+        $documento->contenido = $request->get('contenido');
+
+        //\DB::enableQueryLog();
+
+        $DataDocumento = DB::table('documentos')
+            ->where('id',$id)
+            ->select('tipo_documento_id','proceso_id')
+            ->get();
+
+        foreach($DataDocumento as $item){
+
+            if(($item->tipo_documento_id == $request->get('tipo_documento_id')) && ($item->proceso_id == $request->get('proceso_id'))){
+            
+                unset($documento->proceso_id);
+                unset($documento->tipo_documento_id);   
+                unset($documento->codigo);
+            
+            }else{
+                
+
+                $documento->proceso_id = $request->get('proceso_id');
+                $documento->tipo_documento_id = $request->get('tipo_documento_id');
+                
+                $codigoDocumento = DB::table('documentos')
+                ->where('proceso_id',$request->get('proceso_id'))
+                ->where('tipo_documento_id',$request->get('tipo_documento_id'))
+                ->max('codigo');
+
+                if($codigoDocumento > 0){
+                    $documento->codigo = $codigoDocumento + 1;
+                }else{
+                    $documento->codigo = 1;
+                }
+            }
+        }
+        
+        $documento->save();
+        
+        return redirect()->route('documentos.index')->with('success', 'Registro modificado correctamente.');
+    }
+
+    public function destroy($id)
+    {
+        $documento = Documento::find($id)->delete();
+
+        return redirect()->route('documentos.index')->with('success', 'Registro eliminado correctamente.');
+    }
 }
