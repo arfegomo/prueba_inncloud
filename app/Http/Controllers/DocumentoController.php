@@ -112,13 +112,13 @@ class DocumentoController extends Controller
         
         $documento->save();
         
-        return redirect()->route('documentos.index')->with('success', 'Registro modificado correctamente.');
+        return redirect()->route('documentos.index')->with('grabado', 'ok');
     }
 
     public function destroy($id)
     {
         $documento = Documento::find($id)->delete();
 
-        return redirect()->route('documentos.index')->with('success', 'Registro eliminado correctamente.');
+        return redirect()->route('documentos.index')->with('eliminado', 'ok');
     }
 }
