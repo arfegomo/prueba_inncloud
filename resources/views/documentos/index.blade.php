@@ -23,9 +23,10 @@
             
             <div class="float-right">
               <a href="{{ route('documentos.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
-                {{ __('Crear Documento') }}
+                <i class="fa-solid fa-file-circle-plus"></i> {{ __('Crear Documento') }}
               </a>
             </div>
+
             <table id="tablaDocumentos" class="display responsive nowrap" style="width: 100%;">
               <thead class="bg-dark text-white">
                   <tr>
